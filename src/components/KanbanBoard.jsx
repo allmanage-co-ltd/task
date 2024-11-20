@@ -147,9 +147,7 @@ const KanbanBoard = () => {
                   <Menu className="w-6 h-6 text-gray-600" />
                 </button>
                 <Layout className="w-8 h-8 text-blue-600" />
-                <h1 className="text-2xl font-bold text-gray-900">
-                  カンバンボード
-                </h1>
+                <h1 className="text-2xl font-bold text-gray-900">進捗管理</h1>
               </div>
               <div className="flex items-center space-x-4">
                 <div className="relative">
