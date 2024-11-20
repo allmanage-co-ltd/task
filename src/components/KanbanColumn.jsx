@@ -1,9 +1,19 @@
 import React from "react";
 import { useDroppable } from "@dnd-kit/core";
 import TaskCard from "./TaskCard";
-import { MoreHorizontal } from "lucide-react";
+import { MoreHorizontal, Trash2 } from "lucide-react";
 
-const KanbanColumn = ({ id, title, tasks, color }) => {
+// KanbanColumn.jsx を修正
+const KanbanColumn = ({
+  id,
+  title,
+  tasks,
+  color,
+  tags,
+  onToggleTag,
+  onDelete,
+}) => {
+  // tags とonToggleTag を props に追加
   const { setNodeRef } = useDroppable({
     id: id,
   });
@@ -24,7 +34,12 @@ const KanbanColumn = ({ id, title, tasks, color }) => {
 
       <div className={`column-content ${color}`}>
         {tasks.map((task) => (
-          <TaskCard key={task.id} task={task} />
+          <TaskCard
+            key={task.id}
+            task={task}
+            tags={tags} // tags を渡す
+            onToggleTag={onToggleTag} // onToggleTag を渡す
+          />
         ))}
       </div>
     </div>

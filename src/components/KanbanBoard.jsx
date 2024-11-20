@@ -3,54 +3,19 @@ import { DndContext, closestCorners } from "@dnd-kit/core";
 import KanbanColumn from "./KanbanColumn";
 import Sidebar from "./Sidebar";
 import { Plus, Layout, Search, Menu } from "lucide-react";
+import { initialData } from "../data/initialData";
 
 const KanbanBoard = () => {
-  const [tasks, setTasks] = useState([
-    {
-      id: "1",
-      title: "プロジェクト計画の作成",
-      status: "todo",
-      priority: "high",
-      tags: ["企画", "重要"],
-    },
-    {
-      id: "2",
-      title: "デザインレビュー",
-      status: "in-progress",
-      priority: "medium",
-      tags: ["デザイン"],
-    },
-    {
-      id: "3",
-      title: "バグ修正",
-      status: "done",
-      priority: "low",
-      tags: ["開発"],
-    },
-  ]);
-
-  const [tags, setTags] = useState([
-    { id: "1", name: "企画", color: "#EF4444" },
-    { id: "2", name: "デザイン", color: "#3B82F6" },
-    { id: "3", name: "開発", color: "#10B981" },
-    { id: "4", name: "重要", color: "#F59E0B" },
-  ]);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [tasks, setTasks] = useState(initialData.tasks);
+  const [tags, setTags] = useState(initialData.tags);
+  const [columns, setColumns] = useState(initialData.columns);
 
   const [newTask, setNewTask] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [newListTitle, setNewListTitle] = useState("");
+  const [isAddingList, setIsAddingList] = useState(false);
 
-  const columns = [
-    { id: "todo", title: "未着手", color: "bg-gray-50 hover:bg-gray-100" },
-    {
-      id: "in-progress",
-      title: "進行中",
-      color: "bg-blue-50 hover:bg-blue-100",
-    },
-    { id: "done", title: "完了", color: "bg-green-50 hover:bg-green-100" },
-  ];
-
-  // タスクの検索・フィルタリング
   const filteredTasks = tasks.filter(
     (task) =>
       task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -59,7 +24,6 @@ const KanbanBoard = () => {
       )
   );
 
-  // タスクの追加
   const addNewTask = (e) => {
     e.preventDefault();
     if (!newTask.trim()) return;
@@ -76,11 +40,37 @@ const KanbanBoard = () => {
     setNewTask("");
   };
 
-  // タグ関連の管理
+  const handleAddList = (e) => {
+    e.preventDefault();
+    if (!newListTitle.trim()) return;
+
+    const newList = {
+      id: newListTitle.toLowerCase().replace(/\s+/g, "-"),
+      title: newListTitle,
+      color: "bg-gray-50 hover:bg-gray-100",
+    };
+
+    setColumns((prev) => [...prev, newList]);
+    setNewListTitle("");
+    setIsAddingList(false);
+  };
+
+  const handleDeleteList = (listId) => {
+    setTasks((prevTasks) =>
+      prevTasks.map((task) =>
+        task.status === listId ? { ...task, status: "todo" } : task
+      )
+    );
+    setColumns((prev) => prev.filter((col) => col.id !== listId));
+  };
+
   const addTag = (tagData) => {
     setTags((prevTags) => [
       ...prevTags,
-      { id: Date.now().toString(), ...tagData },
+      {
+        id: `tag-${Date.now()}`, // より確実に一意のIDを生成
+        ...tagData,
+      },
     ]);
   };
 
@@ -111,7 +101,6 @@ const KanbanBoard = () => {
     );
   };
 
-  // タスクのドラッグ操作
   const handleDragEnd = (event) => {
     const { active, over } = event;
     if (!over) return;
@@ -125,7 +114,6 @@ const KanbanBoard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
-      {/* サイドバー */}
       <Sidebar
         isOpen={isSidebarOpen}
         tags={tags}
@@ -133,13 +121,21 @@ const KanbanBoard = () => {
         onDeleteTag={deleteTag}
       />
 
-      {/* メインエリア */}
-      <div className="flex-1">
-        {/* ヘッダー */}
+      <div
+        className={`flex-1 ${
+          isSidebarOpen ? "ml-64" : "ml-0"
+        } transition-all duration-300`}
+      >
         <header className="bg-white border-b border-gray-200 sticky top-0 z-20">
           <div className="max-w-7xl mr-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
+                <button
+                  onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+                >
+                  <Menu className="w-6 h-6 text-gray-600" />
+                </button>
                 <Layout className="w-8 h-8 text-blue-600" />
                 <h1 className="text-2xl font-bold text-gray-900">進捗管理</h1>
               </div>
@@ -175,26 +171,73 @@ const KanbanBoard = () => {
           </div>
         </header>
 
-        {/* メインのカンバンボード */}
-        <main className="max-w-7xl mr-auto px-4 sm:px-6 lg:px-8 py-8">
+        <main className=" mr-auto px-4 sm:px-6 lg:px-8 py-8">
           <DndContext
             collisionDetection={closestCorners}
             onDragEnd={handleDragEnd}
           >
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="list-g flex gap-6 overflow-x-auto pb-4">
               {columns.map((column) => (
-                <KanbanColumn
-                  key={column.id}
-                  id={column.id}
-                  title={column.title}
-                  color={column.color}
-                  tasks={filteredTasks.filter(
-                    (task) => task.status === column.id
-                  )}
-                  tags={tags}
-                  onToggleTag={toggleTaskTag}
-                />
+                <div key={column.id} className="flex-shrink-0 w-80">
+                  <KanbanColumn
+                    id={column.id}
+                    title={column.title}
+                    color={column.color}
+                    tasks={filteredTasks.filter(
+                      (task) => task.status === column.id
+                    )}
+                    tags={tags}
+                    onToggleTag={toggleTaskTag}
+                    onDelete={() => handleDeleteList(column.id)}
+                  />
+                </div>
               ))}
+
+              <div className="flex-shrink-0 w-80">
+                {isAddingList ? (
+                  <form
+                    onSubmit={handleAddList}
+                    className="bg-white p-4 rounded-lg shadow"
+                  >
+                    <div className="flex flex-col gap-3">
+                      <input
+                        type="text"
+                        value={newListTitle}
+                        onChange={(e) => setNewListTitle(e.target.value)}
+                        placeholder="リスト名を入力..."
+                        className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        autoFocus
+                      />
+                      <div className="flex gap-2">
+                        <button
+                          type="submit"
+                          className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                          追加
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsAddingList(false);
+                            setNewListTitle("");
+                          }}
+                          className="px-4 py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                        >
+                          キャンセル
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+                ) : (
+                  <button
+                    onClick={() => setIsAddingList(true)}
+                    className="w-full p-4 bg-gray-50 hover:bg-gray-100 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center gap-2 text-gray-600"
+                  >
+                    <Plus className="w-5 h-5" />
+                    リストを追加
+                  </button>
+                )}
+              </div>
             </div>
           </DndContext>
         </main>
