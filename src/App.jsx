@@ -1,5 +1,6 @@
 import React from "react";
 import KanbanBoard from "./components/KanbanBoard";
+import "./styles/style.scss";
 
 function App() {
   return (
