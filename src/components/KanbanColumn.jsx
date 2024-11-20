@@ -1,53 +1,34 @@
-function KanbanColumn({ title, tasks, onMoveTask }) {
-  const handleMove = (taskId, direction) => {
-    const newStatus =
-      direction === "next"
-        ? title === "未着手"
-          ? "in-progress"
-          : "done"
-        : title === "進行中"
-        ? "todo"
-        : "in-progress";
+import React from "react";
+import { useDroppable } from "@dnd-kit/core";
+import TaskCard from "./TaskCard";
+import { MoreHorizontal } from "lucide-react";
 
-    onMoveTask(taskId, newStatus);
-  };
+const KanbanColumn = ({ id, title, tasks, color }) => {
+  const { setNodeRef } = useDroppable({
+    id: id,
+  });
 
   return (
-    <div
-      style={{
-        padding: "16px",
-        border: "1px solid #ddd",
-        borderRadius: "4px",
-        flex: 1,
-      }}
-    >
-      <h3>{title}</h3>
-      <ul>
+    <div ref={setNodeRef} className="flex flex-col bg-white rounded-lg shadow">
+      <div className="column-header">
+        <div className="flex items-center space-x-2">
+          <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
+          <span className="px-2.5 py-0.5 text-sm font-medium bg-gray-100 text-gray-600 rounded-full">
+            {tasks.length}
+          </span>
+        </div>
+        <button className="p-1 hover:bg-gray-100 rounded-full">
+          <MoreHorizontal className="w-5 h-5 text-gray-500" />
+        </button>
+      </div>
+
+      <div className={`column-content ${color}`}>
         {tasks.map((task) => (
-          <li
-            key={task.id}
-            style={{
-              padding: "8px",
-              border: "1px solid #ccc",
-              margin: "8px 0",
-              borderRadius: "4px",
-              background: "#fff",
-            }}
-          >
-            <p>{task.title}</p>
-            <div style={{ display: "flex", gap: "8px" }}>
-              <button onClick={() => handleMove(task.id, "prev")}>
-                ← 戻す
-              </button>
-              <button onClick={() => handleMove(task.id, "next")}>
-                進める →
-              </button>
-            </div>
-          </li>
+          <TaskCard key={task.id} task={task} />
         ))}
-      </ul>
+      </div>
     </div>
   );
-}
+};
 
 export default KanbanColumn;

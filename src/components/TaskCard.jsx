@@ -1,17 +1,23 @@
-import React, { useState } from 'react';
-import { useDraggable } from '@dnd-kit/core';
-import { GripVertical, AlertCircle, Clock, MoreHorizontal, Tag as TagIcon } from 'lucide-react';
+import React, { useState } from "react";
+import { useDraggable } from "@dnd-kit/core";
+import {
+  GripVertical,
+  AlertCircle,
+  Clock,
+  MoreHorizontal,
+  Tag as TagIcon,
+} from "lucide-react";
 
 const getPriorityColor = (priority) => {
   switch (priority) {
-    case 'high':
-      return 'text-red-500';
-    case 'medium':
-      return 'text-yellow-500';
-    case 'low':
-      return 'text-green-500';
+    case "high":
+      return "text-red-500";
+    case "medium":
+      return "text-yellow-500";
+    case "low":
+      return "text-green-500";
     default:
-      return 'text-gray-500';
+      return "text-gray-500";
   }
 };
 
@@ -21,9 +27,11 @@ const TaskCard = ({ task, tags, onToggleTag }) => {
     id: task.id,
   });
 
-  const style = transform ? {
-    transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-  } : undefined;
+  const style = transform
+    ? {
+        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+      }
+    : undefined;
 
   return (
     <div
@@ -38,11 +46,11 @@ const TaskCard = ({ task, tags, onToggleTag }) => {
           <GripVertical className="w-5 h-5 text-gray-400 flex-shrink-0 mt-0.5" />
           <div className="flex-1">
             <p className="text-gray-900 font-medium mb-2">{task.title}</p>
-            
+
             {task.tags.length > 0 && (
               <div className="flex flex-wrap gap-1 mb-2">
-                {task.tags.map(tagName => {
-                  const tag = tags.find(t => t.name === tagName);
+                {task.tags.map((tagName) => {
+                  const tag = (tags || []).find((t) => t.name === tagName);
                   return tag ? (
                     <span
                       key={tag.id}
@@ -61,7 +69,9 @@ const TaskCard = ({ task, tags, onToggleTag }) => {
 
             <div className="flex items-center gap-4 text-sm text-gray-500">
               <div className="flex items-center gap-1">
-                <AlertCircle className={`w-4 h-4 ${getPriorityColor(task.priority)}`} />
+                <AlertCircle
+                  className={`w-4 h-4 ${getPriorityColor(task.priority)}`}
+                />
                 <span>{task.priority}</span>
               </div>
               <div className="flex items-center gap-1">
@@ -86,7 +96,7 @@ const TaskCard = ({ task, tags, onToggleTag }) => {
 
       {isTagMenuOpen && (
         <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
-          {tags.map(tag => (
+          {tags.map((tag) => (
             <button
               key={tag.id}
               onClick={() => {
