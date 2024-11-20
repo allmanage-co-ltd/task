@@ -137,15 +137,9 @@ const KanbanBoard = () => {
       <div className="flex-1">
         {/* ヘッダー */}
         <header className="bg-white border-b border-gray-200 sticky top-0 z-20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="max-w-7xl mr-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
-                <button
-                  onClick={() => setIsSidebarOpen((prev) => !prev)}
-                  className="p-2 hover:bg-gray-100 rounded-lg"
-                >
-                  <Menu className="w-6 h-6 text-gray-600" />
-                </button>
                 <Layout className="w-8 h-8 text-blue-600" />
                 <h1 className="text-2xl font-bold text-gray-900">進捗管理</h1>
               </div>
@@ -182,7 +176,7 @@ const KanbanBoard = () => {
         </header>
 
         {/* メインのカンバンボード */}
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <main className="max-w-7xl mr-auto px-4 sm:px-6 lg:px-8 py-8">
           <DndContext
             collisionDetection={closestCorners}
             onDragEnd={handleDragEnd}
