@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-gray-50;
+  }
+}
+
+@layer components {
+  .task-card {
+    @apply bg-white p-4 rounded-lg shadow-sm border border-gray-200 
+           hover:shadow-md transition-all duration-200 
+           hover:border-blue-300 cursor-move;
+  }
+
+  .column-header {
+    @apply flex items-center justify-between p-3 bg-white rounded-t-lg 
+           border-b border-gray-200 sticky top-0 z-10;
+  }
+
+  .column-content {
+    @apply p-3 min-h-[calc(100vh-12rem)] rounded-b-lg space-y-3;
+  }
+}
